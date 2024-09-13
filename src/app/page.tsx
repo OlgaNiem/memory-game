@@ -62,7 +62,19 @@ const page = () => {
     if (flippedCards.length !== 1) {
       return
     }
-  }, [])
+    setScore(prev => prev + 1)
+    if (flippedCards[0].value === gameCard.value) {
+      setGameCards(prevGameCards => prevGameCards.map(prevGameCard => [gameCard.id, flippedCards[0].id]
+      .includes(prevGameCard.id) ? {...prevGameCard, isMatched: true } : prevGameCard)
+      );
+      setFlippedCards([])
+    } else {
+      setFlippedCards(prev => prev.concat(gameCard))
+      setTimeout(() => {
+        setFlippedCards([])
+      }, 1000)
+    }
+  }, [flippedCards])
   return (
     <div>Memory game</div>
   )
