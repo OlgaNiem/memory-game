@@ -1,12 +1,25 @@
 .card {
-    border: 2px solid purple;
-    padding: 10px;
-    margin: 2px;
-    width: 20%;
+    border: 2px solid #4a4a4a; 
+    padding: 10px; 
+    margin: 8px; 
+    width: 60px; 
+    height: 60px; 
+    font-size: 20px;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, transform 0.3s ease; 
   }
+  .card-container {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 10px; 
+  }
+  
   .flipped {
-    background-color: lightgreen;
+    background-color: #a3dfb1;
   }
   .notFlipped {
-    background-color: lightcoral;
+    background-color: #f0b8bd; 
+    transform: scale(1.05);
   }
