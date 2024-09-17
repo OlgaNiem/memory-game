@@ -1,5 +1,6 @@
 import { GameCard } from "./types";
 import React from "react";
+import styles from './Card.module.css'
 
 type CardProps = {
   card: GameCard;
@@ -19,10 +20,9 @@ export function Card({ card, isFlipped, isDisabled, onFlip }: CardProps) {
 
   return (
     <button
-      className={`flex justify-center border-2 border-purple-950 p-10 m-2 w-1/5
-        ${isCardFlipped ? "bg-green-200" : "bg-red-200"}`}
-      disabled={isCardFlipped || isDisabled}
-      onClick={handleClick}
+    className={`${styles.card} ${isCardFlipped ? styles.flipped : styles.notFlipped}`}
+    disabled={isCardFlipped || isDisabled}
+    onClick={handleClick}
     >
       {isCardFlipped ? card.value : "?"}
     </button>

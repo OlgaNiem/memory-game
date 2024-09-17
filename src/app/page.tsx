@@ -2,7 +2,6 @@
 import React from "react";
 import { GameCard } from "@/types";
 import { Card } from "@/card";
-import "@/app/globals.css";
 
 function shuffleArray<T>(array: Array<T>): Array<T> {
   for (let i = array.length - 1; i > 0; i--) {
