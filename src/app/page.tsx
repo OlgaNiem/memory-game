@@ -1,5 +1,7 @@
+"use client"
 import React from 'react'
 import { GameCard } from '@/types';
+import { Card } from '@/card';
 
 function shuffleArray<T>(array: Array<T>): Array<T> {
   for( let i = array.length -1; i > 0; i--) {
@@ -75,8 +77,54 @@ const page = () => {
       }, 1000)
     }
   }, [flippedCards])
+
+  const handleRestart = React.useCallback(() => {
+    setGameCards(createGameCards(levels[level].cardCount))
+    setScore(0)
+  }, [level])
+
+  const handleNextLevel = React.useCallback(() => {
+    setLevel(prevLevel => prevLevel +1)
+  }, [])
+
+  if(!levels[level]) {
+    return <h1>You Win!</h1>
+  }
+
   return (
-    <div>Memory game</div>
+    <div className='flex flex-col items-center my-auto text-center'>
+      <h1 className='text-3xl'>Memory Game</h1>
+      <div className='flex flex-wrap justify-center'>
+        {gameCards.map(gameCard => (
+          <Card
+          key={gameCard.id}
+          card={gameCard}
+          isFlipped={flippedCards.some(flippedCard => flippedCard.id === gameCard.id)}
+          isDisabled={flippedCards.length === 2}
+          onFlip={handleCardFlip}
+          />
+        ))}
+      </div>
+      <div>
+        <p>Level: {level +1}</p>
+        <p>Score: {score}</p>
+        {!isDone ? (
+          <div>Remaining Moves: {levels[level].maxScore - score} </div>
+        ) :score <= levels[level].maxScore} ? (
+          <>
+            <p>Nice work!</p>
+            <button className='p-3 bg-green-600 text-white text-2xl'
+            onClick={handleNextLevel}>Next Level</button>
+          </>
+        ) : (
+          <>
+            <p>You were over by {score - levels[level].maxScore}</p>
+            <button className='p-3 bg-red-600 text-white text-2xl'
+            onClick={handleRestart}>Try Again?</button>
+          </>
+        )
+      </div>
+    </div>
   )
 }
 
