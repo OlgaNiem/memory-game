@@ -1,5 +1,6 @@
 .card {
     border: 2px solid #4a4a4a; 
+    border-radius: 6px;
     padding: 10px; 
     margin: 8px; 
     width: 60px; 
@@ -9,13 +10,7 @@
     justify-content: center;
     transition: background-color 0.3s ease, transform 0.3s ease; 
   }
-  .card-container {
-    display: flex;
-    flex-wrap: wrap; 
-    justify-content: center; 
-    gap: 10px; 
-  }
-  
+ 
   .flipped {
     background-color: #a3dfb1;
   }

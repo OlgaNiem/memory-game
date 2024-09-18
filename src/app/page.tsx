@@ -2,6 +2,9 @@
 import React from "react";
 import { GameCard } from "@/types";
 import { Card } from "@/card";
+import { sql } from "@vercel/postgres";
+
+
 
 function shuffleArray<T>(array: Array<T>): Array<T> {
   for (let i = array.length - 1; i > 0; i--) {
@@ -42,6 +45,9 @@ const levels: Level[] = [
 ];
 
 const Page = () => {
+
+
+
   const [level, setLevel] = React.useState(0);
   const [gameCards, setGameCards] = React.useState(() =>
     createGameCards(levels[0].cardCount)
@@ -90,11 +96,17 @@ const Page = () => {
     [flippedCards]
   );
 
-  const handleRestart = React.useCallback(() => {
+  const handleRestart = async() => {await fetchData () 
     setGameCards(createGameCards(levels[level].cardCount));
-    setScore(0);
-  }, [level]);
-
+     
+    //setScore(0);
+   
+  };
+async function fetchData () {
+  const response = await fetch('/api/players', {method: 'POST', body: JSON.stringify({score})})
+  const data = await response.json()
+  
+}
   const handleNextLevel = React.useCallback(() => {
     setLevel((prevLevel) => prevLevel + 1);
   }, []);
@@ -104,9 +116,10 @@ const Page = () => {
   }
 
   return (
+
     <div className="flex flex-col items-center my-auto text-center">
-      <h1 className="text-3xl">Memory Game</h1>
-      <div className="flex flex-wrap justify-center">
+      <h1 className="text-3xl font-bold mb-6">Memory Game</h1>
+      <div className="flex flex-wrap justify-center mb-6">
         {gameCards.map((gameCard) => (
           <Card
             key={gameCard.id}
@@ -120,15 +133,15 @@ const Page = () => {
         ))}
       </div>
       <div>
-        <p>Level: {level + 1}</p>
-        <p>Score: {score}</p>
+        <p className='text-lg mb-2'>Level: {level + 1}</p>
+        <p className='text-lg mb-2'>Score: {score}</p>
         {!isDone ? (
           <div>Remaining Moves: {levels[level].maxScore - score}</div>
         ) : score <= levels[level].maxScore ? (
           <>
             <p>Nice work!</p>
             <button
-              className="p-3 bg-green-600 text-white text-2xl"
+              className="p-2 bg-green-600 text-white text-lg rounded hover:bg-green-700 transition"
               onClick={handleNextLevel}
             >
               Next Level
@@ -136,9 +149,9 @@ const Page = () => {
           </>
         ) : (
           <>
-            <p>You were over by {score - levels[level].maxScore}</p>
+            <p className="mb-2">You were over by {score - levels[level].maxScore}</p>
             <button
-              className="p-3 bg-red-600 text-white text-2xl"
+              className="p-2 bg-red-600 text-white text-lg rounded hover:bg-red-700 transition"
               onClick={handleRestart}
             >
               Try Again?
