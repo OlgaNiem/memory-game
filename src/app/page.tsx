@@ -94,7 +94,7 @@ const Page = () => {
     [flippedCards]
   );
 
-  // send data to  db
+  // sanding data to  db
   async function saveGameData() {
     try {
       const response = await fetch("/api/gamedb", {
@@ -114,7 +114,7 @@ const Page = () => {
   }
 
   const handleRestart = async () => {
-    // save data before restarting to db
+    // save data before restarting to
     await saveGameData();
     setGameCards(createGameCards(levels[level].cardCount));
     setScore(0);

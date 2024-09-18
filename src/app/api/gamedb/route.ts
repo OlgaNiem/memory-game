@@ -3,21 +3,21 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    // Получаем данные из тела запроса
+    // get req
     const { level, score } = await request.json();
 
-    // Проверка данных
+    // check data
     if (level === undefined || score === undefined) {
       return NextResponse.json({ error: 'Missing level or score' }, { status: 400 });
     }
 
-    // Вставляем данные в таблицу Gamedb
+    // insert data to db
     await sql`
       INSERT INTO Gamedb (level, score)
       VALUES (${level}, ${score});
     `;
 
-    // Возвращаем успешный ответ
+    // return response
     return NextResponse.json({ message: 'Data saved successfully' }, { status: 200 });
   } catch (error) {
     console.error('Error saving data:', error);
