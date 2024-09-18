@@ -34,11 +34,11 @@ type Level = {
 };
 
 const levels: Level[] = [
-  { cardCount: 2, maxScore: 8 },
-  { cardCount: 3, maxScore: 10 },
-  { cardCount: 2, maxScore: 12 },
-  { cardCount: 3, maxScore: 14 },
-  { cardCount: 2, maxScore: 16 },
+  { cardCount: 3, maxScore: 8 },
+  { cardCount: 4, maxScore: 10 },
+  { cardCount: 5, maxScore: 12 },
+  { cardCount: 6, maxScore: 14 },
+  { cardCount: 7, maxScore: 16 },
  
 ];
 
@@ -49,7 +49,8 @@ const Page = () => {
   );
   const [flippedCards, setFlippedCards] = React.useState([] as GameCard[]);
   const [score, setScore] = React.useState(0);
-  const [isGameOver, setIsGameOver] = React.useState(false); // State to track if the game is over
+  // tracking if the game is over
+  const [isGameOver, setIsGameOver] = React.useState(false); 
 
   const isDone = gameCards.every((gameCard) => gameCard.isMatched);
 
@@ -61,7 +62,8 @@ const Page = () => {
       setGameCards(createGameCards(levelConfig.cardCount));
     }
     setScore(0);
-    setIsGameOver(false); // Reset the game over state when the level changes
+    // Reset when the level changes
+    setIsGameOver(false);
   }, [level]);
 
   const handleCardFlip = React.useCallback(
@@ -115,20 +117,22 @@ const Page = () => {
   // Function to restart the game
   const handleRestart = async () => {
     if (isGameOver) {
-      await saveGameResult(level + 1, score); // Save final result
-      setLevel(0); // Reset level to 0
-      setGameCards(createGameCards(levels[0].cardCount)); // Reset game cards
-      setScore(0); // Reset score
-      setIsGameOver(false); // Game starts anew
+      await saveGameResult(level + 1, score); 
+  // Reset level to 0
+      setLevel(0); 
+  // Reset game cards
+      setGameCards(createGameCards(levels[0].cardCount)); 
+      setScore(0); 
+      setIsGameOver(false); 
     }
   };
 
   const handleNextLevel = React.useCallback(async () => {
     if (level + 1 < levels.length) {
-      await saveGameResult(level + 1, score); // Save result before moving to next level
+      // save result before the next level
+      await saveGameResult(level + 1, score); 
       setLevel((prevLevel) => prevLevel + 1);
     } else {
-      // If at the last level, mark game as over
       setIsGameOver(true);
     }
   }, [level, score]);
@@ -142,9 +146,7 @@ const Page = () => {
         <p className="text-lg mb-2">Final Score: {score}</p>
         <button
           className="p-2 bg-blue-600 text-white text-lg rounded hover:bg-blue-700 transition"
-          onClick={handleRestart}
-        >
-          Play Again
+          onClick={handleRestart}>Play Again  
         </button>
       </div>
     );
@@ -186,8 +188,7 @@ const Page = () => {
             <p className="mb-2">You were over by {score - levels[level].maxScore}</p>
             <button
               className="p-2 bg-red-600 text-white text-lg rounded hover:bg-red-700 transition"
-              onClick={handleRestart}
-            >
+              onClick={handleRestart}>
               Try Again?
             </button>
           </>
