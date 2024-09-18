@@ -1,16 +1,4 @@
-/* import { sql } from '@vercel/postgres';
-import { NextResponse } from 'next/server';
- 
-export async function POST(request: Request) {
- 
- const body = await request.json()
- console.log(body)
-
-  const gamedb = await sql`SELECT * FROM Gamedb;`;
-  return NextResponse.json({ gamedb }, { status: 200 });
-} */
-
-  import { sql } from '@vercel/postgres';
+import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
