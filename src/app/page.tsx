@@ -4,8 +4,6 @@ import { GameCard } from "@/types";
 import { Card } from "@/card";
 import { sql } from "@vercel/postgres";
 
-
-
 function shuffleArray<T>(array: Array<T>): Array<T> {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -96,18 +94,34 @@ const Page = () => {
     [flippedCards]
   );
 
-  const handleRestart = async() => {await fetchData () 
+  // send data to  db
+  async function saveGameData() {
+    try {
+      const response = await fetch("/api/gamedb", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ level, score }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to save game data");
+      }
+      console.log("Game data saved successfully");
+    } catch (error) {
+      console.error("Error saving game data:", error);
+    }
+  }
+
+  const handleRestart = async () => {
+    // save data before restarting to db
+    await saveGameData();
     setGameCards(createGameCards(levels[level].cardCount));
-     
-    //setScore(0);
-   
+    setScore(0);
   };
-async function fetchData () {
-  const response = await fetch('/api/players', {method: 'POST', body: JSON.stringify({score})})
-  const data = await response.json()
-  
-}
-  const handleNextLevel = React.useCallback(() => {
+
+  const handleNextLevel = React.useCallback(async () => {
+    await saveGameData();
     setLevel((prevLevel) => prevLevel + 1);
   }, []);
 
