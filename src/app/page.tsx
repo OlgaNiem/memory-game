@@ -2,7 +2,6 @@
 import React from "react";
 import { GameCard } from "@/types";
 import { Card } from "@/card";
-import { sql } from "@vercel/postgres";
 
 function shuffleArray<T>(array: Array<T>): Array<T> {
   for (let i = array.length - 1; i > 0; i--) {
@@ -35,23 +34,22 @@ type Level = {
 };
 
 const levels: Level[] = [
-  { cardCount: 3, maxScore: 8 },
-  { cardCount: 4, maxScore: 10 },
-  { cardCount: 5, maxScore: 12 },
-  { cardCount: 6, maxScore: 14 },
-  { cardCount: 7, maxScore: 16 },
+  { cardCount: 2, maxScore: 8 },
+  { cardCount: 3, maxScore: 10 },
+  { cardCount: 2, maxScore: 12 },
+  { cardCount: 3, maxScore: 14 },
+  { cardCount: 2, maxScore: 16 },
+ 
 ];
 
 const Page = () => {
-
-
-
   const [level, setLevel] = React.useState(0);
   const [gameCards, setGameCards] = React.useState(() =>
     createGameCards(levels[0].cardCount)
   );
   const [flippedCards, setFlippedCards] = React.useState([] as GameCard[]);
   const [score, setScore] = React.useState(0);
+  const [isGameOver, setIsGameOver] = React.useState(false); // State to track if the game is over
 
   const isDone = gameCards.every((gameCard) => gameCard.isMatched);
 
@@ -63,6 +61,7 @@ const Page = () => {
       setGameCards(createGameCards(levelConfig.cardCount));
     }
     setScore(0);
+    setIsGameOver(false); // Reset the game over state when the level changes
   }, [level]);
 
   const handleCardFlip = React.useCallback(
@@ -94,15 +93,15 @@ const Page = () => {
     [flippedCards]
   );
 
-  // sanding data to  db
-  async function saveGameData() {
+  // Function to save game result
+  async function saveGameResult(currentLevel: number, currentScore: number) {
     try {
       const response = await fetch("/api/gamedb", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ level, score }),
+        body: JSON.stringify({ level: currentLevel, score: currentScore }),
       });
       if (!response.ok) {
         throw new Error("Failed to save game data");
@@ -113,24 +112,45 @@ const Page = () => {
     }
   }
 
+  // Function to restart the game
   const handleRestart = async () => {
-    // save data before restarting to
-    await saveGameData();
-    setGameCards(createGameCards(levels[level].cardCount));
-    setScore(0);
+    if (isGameOver) {
+      await saveGameResult(level + 1, score); // Save final result
+      setLevel(0); // Reset level to 0
+      setGameCards(createGameCards(levels[0].cardCount)); // Reset game cards
+      setScore(0); // Reset score
+      setIsGameOver(false); // Game starts anew
+    }
   };
 
   const handleNextLevel = React.useCallback(async () => {
-    await saveGameData();
-    setLevel((prevLevel) => prevLevel + 1);
-  }, []);
+    if (level + 1 < levels.length) {
+      await saveGameResult(level + 1, score); // Save result before moving to next level
+      setLevel((prevLevel) => prevLevel + 1);
+    } else {
+      // If at the last level, mark game as over
+      setIsGameOver(true);
+    }
+  }, [level, score]);
 
-  if (!levels[level]) {
-    return <h1>You Win!</h1>;
+  if (isGameOver) {
+    return (
+      <div className="flex flex-col items-center my-auto text-center">
+        <h1 className="text-3xl font-bold mb-6">
+          {level === levels.length - 1 ? "You Win!" : "Game Over!"}
+        </h1>
+        <p className="text-lg mb-2">Final Score: {score}</p>
+        <button
+          className="p-2 bg-blue-600 text-white text-lg rounded hover:bg-blue-700 transition"
+          onClick={handleRestart}
+        >
+          Play Again
+        </button>
+      </div>
+    );
   }
 
   return (
-
     <div className="flex flex-col items-center my-auto text-center">
       <h1 className="text-3xl font-bold mb-6">Memory Game</h1>
       <div className="flex flex-wrap justify-center mb-6">
@@ -147,8 +167,8 @@ const Page = () => {
         ))}
       </div>
       <div>
-        <p className='text-lg mb-2'>Level: {level + 1}</p>
-        <p className='text-lg mb-2'>Score: {score}</p>
+        <p className="text-lg mb-2">Level: {level + 1}</p>
+        <p className="text-lg mb-2">Score: {score}</p>
         {!isDone ? (
           <div>Remaining Moves: {levels[level].maxScore - score}</div>
         ) : score <= levels[level].maxScore ? (
